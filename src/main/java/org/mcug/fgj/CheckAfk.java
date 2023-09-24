@@ -35,7 +35,6 @@ public class CheckAfk implements Listener {
 
             //update locations
             Location[] locations = playerLocations.computeIfAbsent(player.getUniqueId(), k -> new Location[3]);
-
             //there can cover Out-of-date data easily.
             System.arraycopy(locations, 1, locations, 0, 2);
             //put the current locations into locations[2].
@@ -48,6 +47,8 @@ public class CheckAfk implements Listener {
 
     private void todoAfk(Player player) {
         //AFK to do
+        player.sendTitle("挂机判定","请在5分钟内执行以下操作，否则将被系统判定为挂机" ,10, 70, 20) ;
+        player.sendMessage("请在5分钟内执行以下操作，否则将被系统判定为挂机");
         askQuestion(player);
     }
 
@@ -66,6 +67,7 @@ public class CheckAfk implements Listener {
 
     private void askQuestion(Player player) {
         playerAnswers.put(player, null);
+        player.sendTitle("请在聊天窗回答下面的问题",currentQuestion[0], 10, 70, 20);
         player.sendMessage(currentQuestion[0]);
     }
 
@@ -90,7 +92,10 @@ public class CheckAfk implements Listener {
         Player player = event.getPlayer();
         if (playerAnswers.containsKey(player)){
             String message = event.getMessage();
-            if (message.equals(currentQuestion[1])) playerAnswers.put(player, message);
+            if (message.equals(currentQuestion[1])) {
+                playerAnswers.put(player, message);
+                player.sendMessage("已完成挂机判定！");
+            }
         }
     }
 }
