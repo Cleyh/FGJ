@@ -18,6 +18,8 @@ public final class FGJ extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        Bukkit.getLogger().info("FGJ is running!");
         // Plugin startup logic
         saveDefaultConfig();
         config = YamlConfiguration.loadConfiguration(new File(getDataFolder(),"questions.yml"));
