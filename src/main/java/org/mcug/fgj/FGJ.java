@@ -30,6 +30,7 @@ public final class FGJ extends JavaPlugin {
 
         this.checkAfk = new CheckAfk(afkBookings);
         Objects.requireNonNull(this.getCommand("afk")).setExecutor(new AfkCommand(afkBookings));
+        getServer().getPluginManager().registerEvents(checkAfk, this);
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             Random random = new Random();

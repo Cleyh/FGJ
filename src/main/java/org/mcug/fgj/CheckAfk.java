@@ -3,12 +3,15 @@ package org.mcug.fgj;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class CheckAfk {
+public class CheckAfk implements Listener {
 
     private HashMap<UUID, Location[]> playerLocations;
     private Map<Player, Long> afkBookings;
@@ -80,5 +83,14 @@ public class CheckAfk {
         if (locations[0] == null || locations[1] == null || locations[2] == null) return false;
         double maxDistanceSquared = 16.0000;
         return locations[0].distanceSquared(locations[1]) <= maxDistanceSquared && locations[1].distanceSquared(locations[2]) <= maxDistanceSquared;
+    }
+
+    @EventHandler
+    public void onPlayerAnswer(AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
+        if (playerAnswers.containsKey(player)){
+            String message = event.getMessage();
+            if (message.equals(currentQuestion[1])) playerAnswers.put(player, message);
+        }
     }
 }
