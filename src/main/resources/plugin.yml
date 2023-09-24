@@ -2,3 +2,7 @@ name: FGJ
 version: '${project.version}'
 main: org.mcug.fgj.FGJ
 api-version: '1.20'
+commands:
+  afk:
+    description: 预定挂机时间
+    usage: /<command> book [minutes]
