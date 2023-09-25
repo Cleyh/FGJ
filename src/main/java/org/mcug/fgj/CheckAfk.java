@@ -13,15 +13,15 @@ import java.util.UUID;
 
 public class CheckAfk implements Listener {
 
-    private HashMap<UUID, Location[]> playerLocations;
-    private Map<Player, Long> afkBookings;
+    private final HashMap<UUID, Location[]> playerLocations = new HashMap<>();
+    //private Map<Player, Long> afkBookings;
+    private final Map<UUID, Long> afkBookings;
     private String[] currentQuestion = null;
     private String[] lastQuestion = null;
-    private final Map<Player, String> playerAnswers = new HashMap<>();
+    private final Map<UUID, String> playerAnswers = new HashMap<>();
 
-    public CheckAfk(Map<Player, Long> afkBookings) {
+    public CheckAfk(Map<UUID, Long> afkBookings) {
         this.afkBookings = afkBookings;
-        this.playerLocations = new HashMap<>();
     }
 
     public void update(String[] questions){
@@ -48,54 +48,64 @@ public class CheckAfk implements Listener {
     private void todoAfk(Player player) {
         //AFK to do
         player.sendTitle("挂机判定","请在5分钟内执行以下操作，否则将被系统判定为挂机" ,10, 70, 20) ;
-        player.sendMessage("请在5分钟内执行以下操作，否则将被系统判定为挂机");
+        player.sendMessage("[挂机判定]请在5分钟内回答问题或执行相应的操作，否则将被系统判定为挂机");
         askQuestion(player);
     }
 
     private boolean isAnswer(Player player) {
-        if(!playerAnswers.containsKey(player)) return true;
-        else {
-            String answer = playerAnswers.get(player);
+        if(!playerAnswers.containsKey(player.getUniqueId())) return true;
 
-            if(answer != null && answer.equals(lastQuestion[1])) {
-                this.playerAnswers.remove(player);
-                return true;
-            }
+        String answer = playerAnswers.get(player.getUniqueId());
+
+        if(answer != null && answer.equals(lastQuestion[1])) {
+            this.playerAnswers.remove(player.getUniqueId());
+            return true;
         }
+
         return false;
     }
 
     private void askQuestion(Player player) {
-        playerAnswers.put(player, null);
+        playerAnswers.put(player.getUniqueId(), null);
         player.sendTitle("请在聊天窗回答下面的问题",currentQuestion[0], 10, 70, 20);
-        player.sendMessage(currentQuestion[0]);
+        player.sendMessage("请在聊天窗回答该的问题: " + currentQuestion[0]);
     }
 
     private void kickPlayer(Player player) {
         player.kickPlayer("You have been kicked for AFK.");
-        playerAnswers.remove(player);
+        playerAnswers.remove(player.getUniqueId());
     }
 
 
     private boolean isAfkBooked(Player player) {
-        return afkBookings.containsKey(player) && System.currentTimeMillis()<afkBookings.get(player);
+        if(!afkBookings.containsKey(player.getUniqueId()))
+            return false;
+        if(System.currentTimeMillis()<afkBookings.get(player.getUniqueId()))
+            return true;
+        else
+            afkBookings.remove(player.getUniqueId());
+        return false;
     }
 
     private boolean isAFK(Location[] locations) {
         if (locations[0] == null || locations[1] == null || locations[2] == null) return false;
         double maxDistanceSquared = 16.0000;
-        return locations[0].distanceSquared(locations[1]) <= maxDistanceSquared && locations[1].distanceSquared(locations[2]) <= maxDistanceSquared;
+        return locations[0].distanceSquared(locations[1]) <= maxDistanceSquared
+                && locations[1].distanceSquared(locations[2]) <= maxDistanceSquared;
     }
 
     @EventHandler
     public void onPlayerAnswer(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (playerAnswers.containsKey(player)){
-            String message = event.getMessage();
-            if (message.equals(currentQuestion[1])) {
-                playerAnswers.put(player, message);
-                player.sendMessage("已完成挂机判定！");
-            }
-        }
+        if (!playerAnswers.containsKey(player.getUniqueId()))
+            return;
+
+        String message = event.getMessage();
+        if (!message.equals(currentQuestion[1]))
+            return;
+
+        playerAnswers.put(player.getUniqueId(), message);
+        player.sendMessage("已完成挂机判定！");
+
     }
 }

@@ -12,7 +12,7 @@ import java.util.*;
 public final class FGJ extends JavaPlugin {
 
     private CheckAfk checkAfk;
-    private final Map<Player, Long> afkBookings = new HashMap<>();
+    private final Map<UUID, Long> afkBookings = new HashMap<>();
     private final Map<String,String> questions = new HashMap<>();
     private FileConfiguration config;
 

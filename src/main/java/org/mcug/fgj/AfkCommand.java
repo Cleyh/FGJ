@@ -6,11 +6,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class AfkCommand implements CommandExecutor {
-    private final Map<Player,Long> afkBookings;
+    private final Map<UUID,Long> afkBookings;
 
-    public AfkCommand(Map<Player,Long> afkBookings) {
+    public AfkCommand(Map<UUID,Long> afkBookings) {
         this.afkBookings = afkBookings;
     }
 
@@ -21,7 +22,7 @@ public class AfkCommand implements CommandExecutor {
                 Player player = (Player) sender;
                 int minutes = Integer.parseInt(args[1]);
                 if (minutes > 0 && minutes <= 256) {
-                    afkBookings.put(player, System.currentTimeMillis() + minutes * 60 * 1000);
+                    afkBookings.put(player.getUniqueId(), System.currentTimeMillis() + minutes * 60 * 1000);
                     player.sendMessage("你已预定了 " + minutes + " 分钟的挂机时间。");
                 } else {
                     player.sendMessage("挂机时间必须在1到256分钟之间。");
