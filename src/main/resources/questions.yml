@@ -1,0 +1,7 @@
+questions:
+  - question: "发送字符A"
+    answer: "A"
+  - question: "发送字符B"
+    answer: "B"
+  - question: "1+1=?"
+    answer: "2"
